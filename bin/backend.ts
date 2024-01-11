@@ -5,6 +5,7 @@ import { DatabaseStack } from "../lib/database-stack";
 import { ComputeStack } from "../lib/compute-stack";
 import { AuthStack } from "../lib/auth-stack";
 import { EventBridgeStack } from "../lib/eventbus-stack";
+import { SESStack } from "../lib/ses-stack";
 
 const app = new cdk.App();
 const databaseStack = new DatabaseStack(app, "DataBaseStack");
@@ -25,3 +26,4 @@ const eventStack = new EventBridgeStack(app, "EventBridgeStack", {
   registerBooking: computeStack.resgisterBookingFunc,
   emailReceipt: computeStack.sendEmailFunc,
 });
+const sesStack = new SESStack(app, "SESStack");

@@ -25,6 +25,7 @@ export class ComputeStack extends cdk.Stack {
     this.bookingLambdaInteGration = this.bookSeats(props);
     this.resgisterBookingFunc = this.registerBooking(props);
     this.syncFlightRuleFunc = this.syncFLights(props);
+    this.sendEmailFunc = this.sendEmail(props);
   }
 
   addUserToUsersTable(props: computeStackProps) {
@@ -89,6 +90,25 @@ export class ComputeStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ["dynamodb:*"],
         resources: [props.seatsTable.tableArn],
+      })
+    );
+    return func;
+  }
+  sendEmail(props: computeStackProps): NodejsFunction {
+    const func = new NodejsFunction(this, "sendEmail", {
+      functionName: "sendEmail",
+      runtime: Runtime.NODEJS_18_X,
+      handler: "handler",
+      entry: path.join(__dirname, `../functions/SendBookingEmail/index.ts`),
+    });
+    func.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ["ses:*", "dynamodb:*"],
+        resources: [
+          props.usersTable.tableArn as string,
+          props.usersTable.tableArn + "/index/usernameIndex",
+          "*",
+        ],
       })
     );
     return func;
